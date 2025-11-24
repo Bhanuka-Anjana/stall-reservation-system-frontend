@@ -15,6 +15,20 @@ export function OverviewMap({ onHallSelect, hallStats }: OverviewMapProps) {
     { id: 3, name: "Hall 3", top: '55%', left: '29%', width: '42%', height: '35%', color: 'var(--orange-3)' },
   ];
 
+  // Filter halls that have stalls
+  const availableHalls = halls.filter(hall => 
+    hallStats.some(stat => stat.id === hall.id)
+  );
+
+  if (availableHalls.length === 0) {
+    return (
+      <Flex direction="column" align="center" justify="center" width="100%" height="100%">
+        <Text size="5" weight="bold" mb="2">No Stalls Available</Text>
+        <Text size="3" color="gray">There are no stalls configured for this event yet.</Text>
+      </Flex>
+    );
+  }
+
   return (
     <Flex direction="column" gap="4" width="100%" height="100%">
       <Text size="5" weight="bold">Venue Overview</Text>
@@ -31,7 +45,7 @@ export function OverviewMap({ onHallSelect, hallStats }: OverviewMapProps) {
           minHeight: '500px',
         }}
       >
-        {halls.map((hall) => {
+        {availableHalls.map((hall) => {
           const stats = hallStats.find(s => s.id === hall.id);
           return (
             <Card 

@@ -1,23 +1,35 @@
-"use client";
-
-import { Flex, Text, Container, Box } from "@radix-ui/themes";
+import { Flex, Text, Container, Box, Card, Badge, Grid, Separator } from "@radix-ui/themes";
 import { BookfairMap } from "@/components/BookfairMap";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { Event } from "@/types";
+import { CalendarIcon, SewingPinIcon } from "@radix-ui/react-icons";
 
-export default function ReservationsPage() {
-  return (
-    <div style={{ height: 'calc(100vh - 65px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <Container size="4" p="4" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <Flex direction="column" align="center" gap="4" style={{ height: '100%' }}>
-          <Flex direction="column" align="center" gap="2" style={{ flexShrink: 0 }}>
-            <Text size="8" weight="bold">Stall Reservations</Text>
-            <Text size="4" color="gray">Select a hall and stall to reserve</Text>
-          </Flex>
-          
-          <Box style={{ flex: 1, width: '100%', minHeight: 0 }}>
-            <BookfairMap />
-          </Box>
-        </Flex>
-      </Container>
-    </div>
-  );
-}
+function ReservationsContent() {
+  const searchParams = useSearchParams();
+  const eventIdParam = searchParams.get('eventId');
+  const [event, setEvent] = useState<Event | null>(null);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
+  useEffect(() => {
+    if (!eventIdParam) {
+      setIsLoadingEvent(false);
+      return;
+    }
+
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events/${eventIdParam}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEvent(data.data || data);
+        }
+      } catch (error) {
+        console.error('Error fetching event:', error);
+      } finally {
+        setIsLoadingEvent(false);
+      }
+    };
+    fetchEvent();
+    }, [eventIdParam]);
+
+  const eventId = eventIdParam || 'default';
