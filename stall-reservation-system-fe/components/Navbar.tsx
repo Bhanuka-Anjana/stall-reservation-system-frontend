@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Text, Button, Box, DropdownMenu, Avatar } from "@radix-ui/themes";
+import { Flex, Text, Button, Box, Avatar } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -18,9 +18,9 @@ export function Navbar() {
         </Link>
 
         <Flex gap="4" align="center">
-          <Link href="/reservations">
-            <Button variant={pathname === '/reservations' ? 'solid' : 'ghost'}>
-              Reservations
+          <Link href="/">
+            <Button variant={pathname === '/' ? 'solid' : 'ghost'}>
+              Dashboard
             </Button>
           </Link>
           
@@ -39,23 +39,15 @@ export function Navbar() {
               </Link>
             </>
           ) : (
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <Button variant="ghost" style={{ gap: '8px' }}>
-                  <PersonIcon />
-                  {user?.fullName || user?.username}
-                  <DropdownMenu.TriggerIcon />
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content>
-                <DropdownMenu.Label>My Account</DropdownMenu.Label>
-                <DropdownMenu.Item disabled>{user?.email}</DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item color="red" onClick={logout}>
-                  Log out
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            <>
+              <Flex align="center" gap="2">
+                <PersonIcon />
+                <Text weight="medium">{user?.fullName || user?.username}</Text>
+              </Flex>
+              <Button color="red" variant="soft" onClick={logout}>
+                Log out
+              </Button>
+            </>
           )}
         </Flex>
       </Flex>
