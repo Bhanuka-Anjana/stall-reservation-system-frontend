@@ -5,6 +5,7 @@ import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <AuthProvider>
             <Navbar />
             {children}
+            <Toaster position="top-center" />
           </AuthProvider>
         </Theme>
       </body>

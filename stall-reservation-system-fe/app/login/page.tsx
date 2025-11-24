@@ -1,21 +1,19 @@
 "use client";
 
-import { Flex, Text, TextField, Button, Card, Container, Callout } from "@radix-ui/themes";
+import { Flex, Text, TextField, Button, Card, Container } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -35,13 +33,14 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.success) {
+        toast.success("Login successful!");
         login(data.data.token, data.data);
-        router.push('/reservations');
+        router.push('/');
       } else {
-        setError(data.message || "Login failed. Please check your credentials.");
+        toast.error(data.message || "Login failed. Please check your credentials.");
       }
     } catch (err) {
-      setError("An error occurred. Please try again later.");
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -54,17 +53,6 @@ export default function LoginPage() {
           <form onSubmit={handleLogin}>
             <Flex direction="column" gap="4">
               <Text size="6" weight="bold" align="center">Login</Text>
-              
-              {error && (
-                <Callout.Root color="red">
-                  <Callout.Icon>
-                    <ExclamationTriangleIcon />
-                  </Callout.Icon>
-                  <Callout.Text>
-                    {error}
-                  </Callout.Text>
-                </Callout.Root>
-              )}
 
               <Flex direction="column" gap="2">
                 <Text size="2" weight="bold">Email</Text>
