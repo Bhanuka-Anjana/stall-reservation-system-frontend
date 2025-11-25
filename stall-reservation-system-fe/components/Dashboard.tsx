@@ -147,7 +147,7 @@ export function Dashboard() {
     <Flex direction="column" gap="6" width="100%">
       <Box>
         <Heading size="8">Welcome, {user?.username || 'User'}!</Heading>
-        <Text color="gray" size="4">Manage your book fair participation</Text>
+        <Text color="gray" size="4">Organize your next book fair participation</Text>
       </Box>
 
       <Grid columns={{ initial: '1', md: '2' }} gap="6">

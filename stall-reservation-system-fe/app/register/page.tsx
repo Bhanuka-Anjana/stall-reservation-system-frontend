@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Flex, Text, TextField, Button, Card, Container, Select, Grid, Box } from "@radix-ui/themes";
@@ -12,16 +11,19 @@ export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const fullName = formData.get("fullName") as string;
+    const email = formData.get("email") as string;
+    const phoneNumber = formData.get("phoneNumber") as string;
+    const companyName = formData.get("companyName") as string;
+    const role = formData.get("role") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
 
     if (!fullName || !email || !phoneNumber || !companyName || !password || !confirmPassword) {
       toast.error("All fields are required.");
@@ -36,16 +38,19 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          fullName,
+          username: email.split('@')[0], // Using part of email as username since it was removed from form
           email,
+          password,
+          fullName,
           phoneNumber,
           companyName,
-          password,
-          role: "VENDOR",
+          role
         }),
       });
 
@@ -56,6 +61,7 @@ export default function RegisterPage() {
         login(data.data.token, data.data);
         router.push('/');
       } else {
+        // Display the specific error message from the backend (e.g., weak password, existing email)
         toast.error(data.data || "Registration failed. Please try again.");
       }
     } catch (err) {
@@ -67,12 +73,12 @@ export default function RegisterPage() {
 
   return (
     <Container size="2">
-      <Flex direction="column" justify="center" style={{ minHeight: '100vh' }}>
-        <Card>
+      <Flex direction="column" align="center" justify="center" style={{ minHeight: '80vh', padding: '2rem 0' }}>
+        <Card size="4" style={{ width: '100%' }}>
           <form onSubmit={handleRegister}>
             <Flex direction="column" gap="4">
               <Text size="6" weight="bold" align="center">Register</Text>
-
+              
               <Grid columns={{ initial: '1', sm: '2' }} gap="4">
                 <Flex direction="column" gap="2">
                   <Text size="2" weight="bold">Full Name</Text>
