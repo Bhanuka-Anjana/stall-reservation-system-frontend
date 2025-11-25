@@ -8,31 +8,18 @@ interface OverviewMapProps {
 }
 
 export function OverviewMap({ onHallSelect, hallStats }: OverviewMapProps) {
-  // Mock venue layout with 3 halls
+  // Mock venue layout with 4 halls
   const halls = [
-    { id: 1, name: "Hall 1", top: '10%', left: '5%', width: '42%', height: '35%', color: 'var(--blue-3)' },
-    { id: 2, name: "Hall 2", top: '10%', left: '53%', width: '42%', height: '35%', color: 'var(--plum-3)' },
-    { id: 3, name: "Hall 3", top: '55%', left: '29%', width: '42%', height: '35%', color: 'var(--orange-3)' },
+    { id: 1, name: "Hall 1", top: '10%', left: '5%', width: '42%', height: '35%', color: 'var(--blue-8)' },
+    { id: 2, name: "Hall 2", top: '10%', left: '53%', width: '42%', height: '35%', color: 'var(--plum-8)' },
+    { id: 3, name: "Hall 3", top: '55%', left: '5%', width: '42%', height: '35%', color: 'var(--orange-8)' },
+    { id: 4, name: "Hall 4", top: '55%', left: '53%', width: '42%', height: '35%', color: 'var(--green-8)' },
   ];
-
-  // Filter halls that have stalls
-  const availableHalls = halls.filter(hall => 
-    hallStats.some(stat => stat.id === hall.id)
-  );
-
-  if (availableHalls.length === 0) {
-    return (
-      <Flex direction="column" align="center" justify="center" width="100%" height="100%">
-        <Text size="5" weight="bold" mb="2">No Stalls Available</Text>
-        <Text size="3" color="gray">There are no stalls configured for this event yet.</Text>
-      </Flex>
-    );
-  }
 
   return (
     <Flex direction="column" gap="4" width="100%" height="100%">
       <Text size="5" weight="bold">Venue Overview</Text>
-      <Text size="2" color="gray">Select a hall to view details</Text>
+      <Text size="2" color="gray">Select a suitable hall and go inside of it and explore the stalls.</Text>
       
       <Box 
         style={{ 
@@ -45,30 +32,33 @@ export function OverviewMap({ onHallSelect, hallStats }: OverviewMapProps) {
           minHeight: '500px',
         }}
       >
-        {availableHalls.map((hall) => {
+        {halls.map((hall) => {
           const stats = hallStats.find(s => s.id === hall.id);
+          const isAvailable = !!stats;
+          
           return (
             <Card 
               key={hall.id} 
-              onClick={() => onHallSelect(hall.id)}
+              onClick={() => isAvailable && onHallSelect(hall.id)}
               style={{ 
                 position: 'absolute',
                 top: hall.top,
                 left: hall.left,
                 width: hall.width,
                 height: hall.height,
-                backgroundColor: hall.color,
-                cursor: 'pointer',
+                backgroundColor: isAvailable ? hall.color : 'var(--gray-8)',
+                cursor: isAvailable ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'transform 0.2s',
+                opacity: isAvailable ? 1 : 0.7,
               }}
-              className="hover:scale-[1.02] hover:shadow-lg"
+              className={isAvailable ? "hover:scale-[1.02] hover:shadow-lg" : ""}
             >
               <Flex direction="column" align="center" gap="1">
-                <Text size="6" weight="bold">{hall.name}</Text>
-                {stats && (
+                <Text size="6" weight="bold" color={isAvailable ? undefined : 'gray'}>{hall.name}</Text>
+                {isAvailable ? (
                     <>
                         <Text size="2">
                             Available: {stats.available}
@@ -76,9 +66,11 @@ export function OverviewMap({ onHallSelect, hallStats }: OverviewMapProps) {
                         <Text size="2">
                             Total: {stats.total}
                         </Text>
+                        <Text size="1" color="gray">Click to view layout</Text>
                     </>
+                ) : (
+                    <Text size="2" color="gray" weight="bold">Unavailable</Text>
                 )}
-                <Text size="1" color="gray">Click to view layout</Text>
               </Flex>
             </Card>
           );

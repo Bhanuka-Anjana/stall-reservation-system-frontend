@@ -15,6 +15,7 @@ export default function Home() {
       </Container>
     );
   }
+
   return (
     <Container size="3">
       <Flex direction="column" align="center" justify="center" style={{ minHeight: '80vh' }} gap="6">

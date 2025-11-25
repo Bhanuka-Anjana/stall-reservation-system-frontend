@@ -53,13 +53,13 @@ export default function EventsPage() {
       container.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  
+
   return (
     <div style={{ height: 'calc(100vh - 65px)', display: 'flex', flexDirection: 'column' }}>
       <Box p="4" style={{ flex: 1, overflowY: 'auto' }} id="events-scroll-container">
         <Heading size="8" mb="6">{filter === 'upcoming' ? 'Upcoming Events' : 'All Events'}</Heading>
 
-                {isLoading ? (
+        {isLoading ? (
           <Grid columns={{ initial: '1', md: '2', lg: '3', xl: '4' }} gap="4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Card key={i} size="2">
@@ -69,14 +69,14 @@ export default function EventsPage() {
                     <Skeleton width="100px" height="20px" />
                   </Flex>
 
-                <Skeleton width="80%" height="24px" />
+                  <Skeleton width="80%" height="24px" />
                   
                   <Box style={{ flex: 1 }}>
                     <Skeleton width="100%" height="16px" />
                     <Skeleton width="90%" height="16px" style={{ marginTop: '4px' }} />
                   </Box>
 
-                <Box>
+                  <Box>
                     <Flex gap="2" align="center" mb="1">
                       <Skeleton width="16px" height="16px" />
                       <Skeleton width="120px" height="16px" />
@@ -87,11 +87,11 @@ export default function EventsPage() {
                     </Flex>
                   </Box>
 
-                <Flex justify="between" align="center" mt="2">
+                  <Flex justify="between" align="center" mt="2">
                     <Skeleton width="100px" height="16px" />
                     <Skeleton width="100px" height="32px" />
                   </Flex>
-                  </Flex>
+                </Flex>
               </Card>
             ))}
           </Grid>
@@ -111,11 +111,12 @@ export default function EventsPage() {
                     )}
                   </Flex>
 
-                <Heading size="3">{event.name}</Heading>
+                  <Heading size="3">{event.name}</Heading>
                   
                   <Text size="2" color="gray" style={{ flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {event.description}
                   </Text>
+
                   <Box>
                     <Flex gap="2" align="center" mb="1">
                       <CalendarIcon />
@@ -151,38 +152,37 @@ export default function EventsPage() {
       </Box>
 
       {/* Pagination Footer */}
-      {!isLoading && totalPages > 1 && (
-        <Box 
-          p="4" 
-          style={{ 
-            borderTop: '1px solid var(--gray-5)', 
-            backgroundColor: 'var(--color-background)',
-            flexShrink: 0
-          }}
-        >
-          <Flex justify="center" align="center" gap="4">
-            <Button 
-              variant="soft" 
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              <ChevronLeftIcon /> Previous
-            </Button>
-            
-            <Text size="2">
-              Page {currentPage} of {totalPages}
-            </Text>
+      <Box 
+        p="4" 
+        style={{ 
+          borderTop: '1px solid var(--gray-5)', 
+          backgroundColor: 'var(--color-background)',
+          flexShrink: 0,
+          display: isLoading ? 'none' : 'block'
+        }}
+      >
+        <Flex justify="center" align="center" gap="4">
+          <Button 
+            variant="soft" 
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            <ChevronLeftIcon /> Previous
+          </Button>
+          
+          <Text size="2">
+            Page {totalPages === 0 ? 0 : currentPage} of {totalPages}
+          </Text>
 
-            <Button 
-              variant="soft" 
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Next <ChevronRightIcon />
-            </Button>
-          </Flex>
-        </Box>
-      )}
+          <Button 
+            variant="soft" 
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next <ChevronRightIcon />
+          </Button>
+        </Flex>
+      </Box>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Text, Container, Box, Card, Badge, Grid, Separator } from "@radix-ui/themes";
+import { Flex, Text, Container, Box, Card, Badge, Grid, Separator, Skeleton } from "@radix-ui/themes";
 import { BookfairMap } from "@/components/BookfairMap";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
@@ -38,14 +38,62 @@ function ReservationsContent() {
   const eventId = eventIdParam || 'default';
 
   return (
-    <div style={{ height: 'calc(100vh - 65px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: 'calc(100vh - 65px)', overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingRight: '280px' }}>
       <Container size="4" p="4" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         
         <Grid columns={{ initial: '1', md: '300px 1fr' }} gap="4" style={{ height: '100%' }}>
           
           {/* Left Sidebar - Event Details */}
           <Card style={{ height: '100%', overflowY: 'auto' }}>
-            {event ? (
+            {isLoadingEvent ? (
+              <Flex direction="column" gap="4">
+                <Box>
+                  <Skeleton width="60px" height="20px" style={{ marginBottom: '8px' }} />
+                  <Skeleton width="100%" height="28px" />
+                  <Skeleton width="80%" height="28px" style={{ marginTop: '4px' }} />
+                </Box>
+
+                <Separator size="4" />
+
+                <Flex direction="column" gap="3">
+                  <Flex gap="2" align="start">
+                    <Skeleton width="18px" height="18px" />
+                    <Box style={{ flex: 1 }}>
+                      <Skeleton width="40px" height="16px" />
+                      <Skeleton width="120px" height="16px" style={{ marginTop: '4px' }} />
+                    </Box>
+                  </Flex>
+
+                  <Flex gap="2" align="start">
+                    <Skeleton width="18px" height="18px" />
+                    <Box style={{ flex: 1 }}>
+                      <Skeleton width="50px" height="16px" />
+                      <Skeleton width="100px" height="16px" style={{ marginTop: '4px' }} />
+                    </Box>
+                  </Flex>
+                </Flex>
+
+                <Separator size="4" />
+
+                <Box>
+                  <Skeleton width="80px" height="16px" style={{ marginBottom: '4px' }} />
+                  <Skeleton width="100%" height="16px" />
+                  <Skeleton width="100%" height="16px" style={{ marginTop: '4px' }} />
+                  <Skeleton width="90%" height="16px" style={{ marginTop: '4px' }} />
+                </Box>
+
+                <Box style={{ backgroundColor: 'var(--gray-3)', padding: '10px', borderRadius: 'var(--radius-2)' }}>
+                  <Flex justify="between" mb="1">
+                    <Skeleton width="60px" height="14px" />
+                    <Skeleton width="30px" height="14px" />
+                  </Flex>
+                  <Flex justify="between">
+                    <Skeleton width="60px" height="14px" />
+                    <Skeleton width="30px" height="14px" />
+                  </Flex>
+                </Box>
+              </Flex>
+            ) : event ? (
               <Flex direction="column" gap="4">
                 <Box>
                   <Badge color="blue" mb="2">{event.status}</Badge>
@@ -103,10 +151,6 @@ function ReservationsContent() {
 
           {/* Right Side - Map */}
           <Flex direction="column" gap="4" style={{ height: '100%', minHeight: 0 }}>
-             <Flex direction="column" gap="1">
-                <Text size="6" weight="bold">Stall Reservations</Text>
-                <Text size="2" color="gray">Select a hall and stall to reserve</Text>
-             </Flex>
              <Box style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                 <BookfairMap eventId={eventId} />
              </Box>

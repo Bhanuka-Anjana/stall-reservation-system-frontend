@@ -1,5 +1,5 @@
 "use client";
-
+// fix the position
 import { Flex, Text, Button, Box, Avatar } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,11 +11,21 @@ export function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
-    <Box style={{ borderBottom: '1px solid var(--gray-5)', padding: '1rem' }}>
+    <Box style={{ 
+      borderBottom: '1px solid var(--gray-5)', 
+      padding: '1rem',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+      backgroundColor: 'var(--color-background)'
+    }}>
       <Flex justify="between" align="center">
-        <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Text size="5" weight="bold">Bookfair MS</Text>
-        </Link>
+        <Flex align="baseline" gap="3">
+          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Text size="6" weight="bold">BookNexus</Text>
+          </Link>
+          <Text size="3" weight="light" color="gray">powered by Sri Lanka Book Publishers’ Association</Text>
+        </Flex>
 
         <Flex gap="4" align="center">
           <Link href="/">
@@ -23,11 +33,13 @@ export function Navbar() {
               Dashboard
             </Button>
           </Link>
+
           <Link href="/events">
             <Button variant={pathname === '/events' ? 'solid' : 'ghost'}>
               Events
             </Button>
           </Link>
+          
           {!isAuthenticated ? (
             <>
               <Link href="/login">
