@@ -1,7 +1,7 @@
 "use client";
 
 import { Container, Heading, Grid, Card, Flex, Text, Badge, Button, Box, Skeleton, IconButton } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Event } from "@/types";
 import Link from "next/link";
 import { CalendarIcon, SewingPinIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
@@ -11,7 +11,7 @@ import { API_BASE_URL } from "@/utils/apiConfig";
 
 const ITEMS_PER_PAGE = 6;
 
-export default function EventsPage() {
+function EventsContent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -185,5 +185,13 @@ export default function EventsPage() {
         </Flex>
       </Box>
     </div>
+  );
+}
+
+export default function EventsPage() {
+  return (
+    <Suspense fallback={<Text>Loading events...</Text>}>
+      <EventsContent />
+    </Suspense>
   );
 }
