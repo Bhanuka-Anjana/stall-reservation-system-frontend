@@ -1,5 +1,5 @@
 "use client";
-
+// fix the position
 import { Flex, Text, Button, Box, Avatar } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,11 +23,13 @@ export function Navbar() {
               Dashboard
             </Button>
           </Link>
+
           <Link href="/events">
             <Button variant={pathname === '/events' ? 'solid' : 'ghost'}>
               Events
             </Button>
           </Link>
+          
           {!isAuthenticated ? (
             <>
               <Link href="/login">
