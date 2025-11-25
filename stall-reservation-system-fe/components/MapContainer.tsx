@@ -66,10 +66,10 @@ export function MapContainer({ mapId, stalls, selectedStallIds = [], myReservedS
                     alignItems: 'center', 
                     justifyContent: 'center',
                     backgroundColor: stall.status === 'reserved' 
-                      ? (myReservedStallIds.includes(stall.id) ? 'var(--purple-9)' : 'var(--gray-5)')
+                      ? (myReservedStallIds.includes(stall.id) ? 'var(--purple-9)' : 'var(--gray-8)')
                       : selectedStallIds.includes(stall.id)
                         ? 'var(--blue-9)'
-                        : 'var(--green-3)',
+                        : 'var(--green-8)',
                     color: (selectedStallIds.includes(stall.id) || (stall.status === 'reserved' && myReservedStallIds.includes(stall.id))) ? 'white' : 'inherit',
                     cursor: 'pointer',
                     padding: '2px'
@@ -86,11 +86,11 @@ export function MapContainer({ mapId, stalls, selectedStallIds = [], myReservedS
       
       <Flex gap="4" justify="center" pb="2">
         <Flex align="center" gap="2">
-          <Box style={{ width: 16, height: 16, backgroundColor: 'var(--green-3)', border: '1px solid var(--green-6)' }} />
+          <Box style={{ width: 16, height: 16, backgroundColor: 'var(--green-8)', border: '1px solid var(--green-6)' }} />
           <Text size="2">Available</Text>
         </Flex>
         <Flex align="center" gap="2">
-          <Box style={{ width: 16, height: 16, backgroundColor: 'var(--gray-5)', border: '1px solid var(--gray-6)' }} />
+          <Box style={{ width: 16, height: 16, backgroundColor: 'var(--gray-8)', border: '1px solid var(--gray-6)' }} />
           <Text size="2">Reserved</Text>
         </Flex>
         <Flex align="center" gap="2">
