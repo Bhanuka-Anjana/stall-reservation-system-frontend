@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Flex, Text, TextField, Button, Card, Container, Select } from "@radix-ui/themes";
@@ -17,12 +18,6 @@ export default function RegisterPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const fullName = formData.get("fullName") as string;
-    const email = formData.get("email") as string;
-    const phoneNumber = formData.get("phoneNumber") as string;
-    const companyName = formData.get("companyName") as string;
-    const role = formData.get("role") as string;
-    const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (!fullName || !email || !phoneNumber || !companyName || !password || !confirmPassword) {
@@ -36,25 +31,7 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
-
-    try {
-      const response = await fetch("https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: email.split('@')[0], // Using part of email as username since it was removed from form
-          email,
-          password,
-          fullName,
-          phoneNumber,
-          companyName,
-          role
-        }),
-      });
-
-      const data = await response.json();
+    const data = await response.json();
       console.log(data);
       if (data.success) {
         toast.success("Registration successful!");
@@ -69,16 +46,8 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  return (
-    <Container size="1">
-      <Flex direction="column" align="center" justify="center" style={{ minHeight: '80vh', padding: '2rem 0' }}>
-        <Card size="4" style={{ width: '100%' }}>
-          <form onSubmit={handleRegister}>
-            <Flex direction="column" gap="4">
+    <Flex direction="column" gap="4">
               <Text size="6" weight="bold" align="center">Register</Text>
-              
               <Flex direction="column" gap="2">
                 <Text size="2" weight="bold">Full Name</Text>
                 <TextField.Root placeholder="Enter your name" name="fullName" required />

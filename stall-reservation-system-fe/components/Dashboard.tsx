@@ -1,14 +1,14 @@
 "use client";
 
 import { Flex, Text, Card, Button, Heading, Checkbox, Grid, Badge, Box } from "@radix-ui/themes";
-import { DownloadIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Event, Reservation } from "@/types";
+import { Stall } from "@/types";
+import { UPCOMING_EVENTS } from "@/data/events";
+import { generateStalls } from "@/utils/layoutGenerator";
 import { EventCarousel } from "./EventCarousel";
 
-//TODO: upcoming items should be automaticall scroll
 const AVAILABLE_GENRES = [
   "Fiction", "Non-Fiction", "Science Fiction", "Fantasy", 
   "Mystery", "Thriller", "Romance", "Historical", 
@@ -20,29 +20,7 @@ export function Dashboard() {
   const { user } = useAuth();
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
-  const [userReservations, setUserReservations] = useState<Reservation[]>([]);
-  const [isLoadingReservations, setIsLoadingReservations] = useState(true);
-  const [downloadingReservationId, setDownloadingReservationId] = useState<number | null>(null);
-
-  // Fetch upcoming events
-  useEffect(() => {
-    const fetchUpcomingEvents = async () => {
-      try {
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events/upcoming');
-        if (response.ok) {
-          const data = await response.json();
-          setUpcomingEvents(Array.isArray(data) ? data : data.data || []);
-        }
-      } catch (error) {
-        console.error('Error fetching upcoming events:', error);
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    };
-    fetchUpcomingEvents();
-  }, []);
+  const [userReservations, setUserReservations] = useState<{ eventId: string | number, stalls: Stall[] }[]>([]);
 
   // Load saved genres
   useEffect(() => {
@@ -58,44 +36,37 @@ export function Dashboard() {
     }
   }, [user]);
 
-  // Fetch user reservations from backend
+  // Load all reservations for all events
   useEffect(() => {
-    const fetchReservations = async () => {
-      if (!user) {
-        setIsLoadingReservations(false);
-        return;
-      }
-
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setIsLoadingReservations(false);
-          return;
-        }
-
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations/my-reservations', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+    if (user) {
+      const allReservations: { eventId: string | number, stalls: Stall[] }[] = [];
+      
+      UPCOMING_EVENTS.forEach(event => {
+        const stored = localStorage.getItem(`user_reservations_${user.id}_${event.id}`);
+        if (stored) {
+          try {
+            const stallIds: string[] = JSON.parse(stored);
+            if (stallIds.length > 0) {
+              // We need to regenerate stalls for this event to get details
+              // This is a bit inefficient but works for client-side demo
+              const eventStalls: Stall[] = [];
+              [1, 2, 3].forEach(mapId => {
+                const stalls = generateStalls(mapId, event.id.toString());
+                stalls.forEach(s => {
+                  if (stallIds.includes(s.id)) {
+                    eventStalls.push(s);
+                  }
+                });
+              });
+              allReservations.push({ eventId: event.id, stalls: eventStalls });
+            }
+          } catch (e) {
+            console.error("Error parsing reservations", e);
           }
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          const reservations = Array.isArray(result.data) ? result.data : [];
-          setUserReservations(reservations);
-        } else {
-          console.error('Failed to fetch reservations');
-          setUserReservations([]);
         }
-      } catch (error) {
-        console.error('Error fetching reservations:', error);
-        setUserReservations([]);
-      } finally {
-        setIsLoadingReservations(false);
-      }
-    };
-
-    fetchReservations();
+      });
+      setUserReservations(allReservations);
+    }
   }, [user]);
 
   const handleGenreToggle = (genre: string) => {
@@ -113,41 +84,6 @@ export function Dashboard() {
     setTimeout(() => setIsSaving(false), 500); // Fake delay for feedback
   };
 
-  const handleDownloadQR = async (reservationId: number) => {
-    try {
-      setDownloadingReservationId(reservationId);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setDownloadingReservationId(null);
-        return;
-      }
-
-      const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations/${reservationId}/qr-code`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `reservation-${reservationId}-qr.png`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        console.error('Failed to download QR code');
-      }
-    } catch (error) {
-      console.error('Error downloading QR code:', error);
-    } finally {
-      setDownloadingReservationId(null);
-    }
-  };
-
   return (
     <Flex direction="column" gap="6" width="100%">
       <Box>
@@ -160,11 +96,7 @@ export function Dashboard() {
         <Card size="3" style={{ gridColumn: '1 / -1' }}>
           <Flex direction="column" gap="4">
             <Heading size="5">Upcoming Events</Heading>
-            {isLoadingEvents ? (
-              <Text color="gray">Loading events...</Text>
-            ) : (
-              <EventCarousel events={upcomingEvents} />
-            )}
+            <EventCarousel events={UPCOMING_EVENTS} />
           </Flex>
         </Card>
 
@@ -173,56 +105,33 @@ export function Dashboard() {
           <Flex direction="column" gap="4">
             <Heading size="5">My Reservations</Heading>
             
-            {isLoadingReservations ? (
-              <Text color="gray">Loading reservations...</Text>
-            ) : userReservations.length === 0 ? (
+            {userReservations.length === 0 ? (
               <Text color="gray" style={{ fontStyle: 'italic' }}>
                 You haven't reserved any stalls yet.
               </Text>
             ) : (
-              <Flex direction="column" gap="3">
-                {userReservations.map(reservation => (
-                  <Card key={reservation.id} variant="surface">
-                    <Flex direction="column" gap="2">
-                      <Flex justify="between" align="start">
-                        <Flex direction="column" gap="1">
-                          <Text weight="bold" size="2">{reservation.eventName}</Text>
-                          <Text size="2" color="gray">Stall: {reservation.stallNumber} (Hall {reservation.hallNumber})</Text>
-                          <Text size="1" color="gray">Code: {reservation.reservationCode}</Text>
-                        </Flex>
-                        <Flex direction="column" align="end" gap="2">
-                          <Badge color={reservation.status === 'CONFIRMED' ? 'green' : 'orange'}>
-                            {reservation.status}
-                          </Badge>
-                          <Button 
-                            size="1" 
-                            variant="outline" 
-                            onClick={() => handleDownloadQR(reservation.id)} 
-                            style={{ cursor: 'pointer' }}
-                            disabled={downloadingReservationId === reservation.id}
-                          >
-                            {downloadingReservationId === reservation.id ? (
-                              "Downloading..."
-                            ) : (
-                              <>
-                                <DownloadIcon /> QR Code
-                              </>
-                            )}
-                          </Button>
-                        </Flex>
+              <Flex direction="column" gap="4">
+                {userReservations.map(res => {
+                  const event = UPCOMING_EVENTS.find(e => e.id === res.eventId);
+                  return (
+                    <Box key={res.eventId}>
+                      <Text weight="bold" size="2" mb="2">{event?.name || 'Unknown Event'}</Text>
+                      <Flex direction="column" gap="2">
+                        {res.stalls.map(stall => (
+                          <Card key={stall.id} variant="surface">
+                            <Flex justify="between" align="center">
+                              <Flex direction="column">
+                                <Text weight="bold">{stall.name}</Text>
+                                <Text size="2" color="gray">Size: {stall.size}</Text>
+                              </Flex>
+                              <Badge color="purple">Reserved</Badge>
+                            </Flex>
+                          </Card>
+                        ))}
                       </Flex>
-                      {reservation.genres && reservation.genres.length > 0 && (
-                        <Flex gap="1" wrap="wrap">
-                          {reservation.genres.map((genre, idx) => (
-                            <Badge key={idx} color="blue" variant="soft" size="1">
-                              {genre}
-                            </Badge>
-                          ))}
-                        </Flex>
-                      )}
-                    </Flex>
-                  </Card>
-                ))}
+                    </Box>
+                  );
+                })}
               </Flex>
             )}
           </Flex>

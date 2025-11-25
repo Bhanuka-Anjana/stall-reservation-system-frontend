@@ -53,7 +53,11 @@ export default function LoginPage() {
           <form onSubmit={handleLogin}>
             <Flex direction="column" gap="4">
               <Text size="6" weight="bold" align="center">Login</Text>
+<<<<<<< main
               
+=======
+
+>>>>>>> main
               <Flex direction="column" gap="2">
                 <Text size="2" weight="bold">Email</Text>
                 <TextField.Root placeholder="Enter your email" type="email" name="email" required />

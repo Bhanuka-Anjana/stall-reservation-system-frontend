@@ -1,20 +1,16 @@
 "use client";
 
-import { Card, Flex, Text, Button, ScrollArea, Box, Separator, Checkbox } from "@radix-ui/themes";
+import { Card, Flex, Text, Button, ScrollArea, Box, Separator } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { Stall, Genre } from "@/types";
+import { Stall } from "@/types";
 
 interface CartProps {
   items: Stall[];
-  genres: Genre[];
   onRemove: (stallId: string) => void;
-  onGenreChange: (stallId: string, genreId: string, checked: boolean) => void;
   onCheckout: () => void;
 }
 
-export function Cart({ items, genres, onRemove, onGenreChange, onCheckout }: CartProps) {
-  console.log('Cart component - genres:', genres, 'items:', items.length);
-  
+export function Cart({ items, onRemove, onCheckout }: CartProps) {
   if (items.length === 0) return null;
 
   return (
@@ -37,38 +33,18 @@ export function Cart({ items, genres, onRemove, onGenreChange, onCheckout }: Car
         
         <Separator size="4" />
 
-        <ScrollArea type="auto" scrollbars="vertical" style={{ maxHeight: '400px' }}>
-          <Flex direction="column" gap="3">
+        <ScrollArea type="auto" scrollbars="vertical" style={{ maxHeight: '200px' }}>
+          <Flex direction="column" gap="2">
             {items.map(stall => (
-              <Box key={stall.id} p="3" style={{ backgroundColor: 'var(--gray-3)', borderRadius: 'var(--radius-2)' }}>
-                <Flex justify="between" align="center" mb="2">
-                  <Flex direction="column">
-                    <Text size="2" weight="bold">{stall.name}</Text>
-                    <Text size="1" color="gray">{stall.size} size</Text>
-                  </Flex>
-                  <Button variant="ghost" color="red" size="1" onClick={() => onRemove(stall.id)}>
-                    <Cross2Icon />
-                  </Button>
+              <Flex key={stall.id} justify="between" align="center" p="2" style={{ backgroundColor: 'var(--gray-3)', borderRadius: 'var(--radius-2)' }}>
+                <Flex direction="column">
+                  <Text size="2" weight="bold">{stall.name}</Text>
+                  <Text size="1" color="gray">{stall.size} size</Text>
                 </Flex>
-                <Box>
-                  <Text size="1" weight="bold" mb="2" as="div">Genres</Text>
-                  <Flex direction="column" gap="2">
-                    {genres.length === 0 ? (
-                      <Text size="1" color="gray">No genres available</Text>
-                    ) : (
-                      genres.map(genre => (
-                        <label key={genre.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                          <Checkbox 
-                            checked={(stall.genres || []).includes(String(genre.id))}
-                            onCheckedChange={(checked) => onGenreChange(stall.id, String(genre.id), checked as boolean)}
-                          />
-                          <Text size="1">{genre.name}</Text>
-                        </label>
-                      ))
-                    )}
-                  </Flex>
-                </Box>
-              </Box>
+                <Button variant="ghost" color="red" size="1" onClick={() => onRemove(stall.id)}>
+                  <Cross2Icon />
+                </Button>
+              </Flex>
             ))}
           </Flex>
         </ScrollArea>

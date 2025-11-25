@@ -7,6 +7,7 @@ import { Dashboard } from "@/components/Dashboard";
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+<<<<<<< main
 
   if (isAuthenticated) {
     return (
@@ -15,7 +16,16 @@ export default function Home() {
       </Container>
     );
   }
+=======
+>>>>>>> main
 
+  if (isAuthenticated) {
+    return (
+      <Container size="4" p="4">
+        <Dashboard />
+      </Container>
+    );
+  }
   return (
     <Container size="3">
       <Flex direction="column" align="center" justify="center" style={{ minHeight: '80vh' }} gap="6">
