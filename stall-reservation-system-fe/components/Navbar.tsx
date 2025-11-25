@@ -23,7 +23,11 @@ export function Navbar() {
               Dashboard
             </Button>
           </Link>
-          
+          <Link href="/events">
+            <Button variant={pathname === '/events' ? 'solid' : 'ghost'}>
+              Events
+            </Button>
+          </Link>
           {!isAuthenticated ? (
             <>
               <Link href="/login">
