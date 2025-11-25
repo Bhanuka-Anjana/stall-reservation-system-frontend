@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Event, Reservation, Genre } from "@/types";
 import { EventCarousel } from "./EventCarousel";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ export function Dashboard() {
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
       try {
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events/upcoming');
+        const response = await fetch(`${API_BASE_URL}/events/upcoming`);
         if (response.ok) {
           const data = await response.json();
           setUpcomingEvents(Array.isArray(data) ? data : data.data || []);
@@ -54,7 +55,7 @@ export function Dashboard() {
           return;
         }
 
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations/my-reservations', {
+        const response = await fetch(`${API_BASE_URL}/reservations/my-reservations`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -83,7 +84,7 @@ export function Dashboard() {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/genres');
+        const response = await fetch(`${API_BASE_URL}/genres`);
         if (response.ok) {
           const data = await response.json();
           // Handle both array response and { data: [...] } response format
@@ -117,7 +118,7 @@ export function Dashboard() {
         return;
       }
 
-      const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations/${reservationId}/qr-code`, {
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}/qr-code`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

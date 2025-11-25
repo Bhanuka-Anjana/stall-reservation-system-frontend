@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Stall, Genre } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '@/utils/apiConfig';
 
 interface StallResponse {
   id: number;
@@ -29,7 +30,7 @@ export function useReservation(eventId: string) {
     const fetchGenres = async () => {
       try {
         console.log('Fetching genres...');
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/genres');
+        const response = await fetch(`${API_BASE_URL}/genres`);
         if (response.ok) {
           const data = await response.json();
           console.log('Genres response:', data);
@@ -52,7 +53,7 @@ export function useReservation(eventId: string) {
     const fetchStalls = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/stalls/event/${eventId}`, {
+        const response = await fetch(`${API_BASE_URL}/stalls/event/${eventId}`, {
           headers: token ? {
             'Authorization': `Bearer ${token}`
           } : {}
@@ -305,7 +306,7 @@ export function useReservation(eventId: string) {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations/${reservationId}/qr-code`, {
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}/qr-code`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -359,7 +360,7 @@ export function useReservation(eventId: string) {
 
         console.log('Creating reservation:', requestBody);
 
-        const response = await fetch('https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/reservations', {
+        const response = await fetch(`${API_BASE_URL}/reservations`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
