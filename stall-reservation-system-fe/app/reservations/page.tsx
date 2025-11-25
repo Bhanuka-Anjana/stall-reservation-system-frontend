@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 import { Event } from "@/types";
 import { CalendarIcon, SewingPinIcon } from "@radix-ui/react-icons";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 function ReservationsContent() {
   const searchParams = useSearchParams();
@@ -21,7 +22,7 @@ function ReservationsContent() {
 
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events/${eventIdParam}`);
+        const response = await fetch(`${API_BASE_URL}/events/${eventIdParam}`);
         if (response.ok) {
           const data = await response.json();
           setEvent(data.data || data);

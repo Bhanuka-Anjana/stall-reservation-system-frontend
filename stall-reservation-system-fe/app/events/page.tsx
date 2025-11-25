@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CalendarIcon, SewingPinIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -22,8 +23,8 @@ export default function EventsPage() {
     const fetchEvents = async () => {
       try {
         const endpoint = filter === 'upcoming' 
-          ? 'https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events/upcoming'
-          : 'https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/events';
+          ? `${API_BASE_URL}/events/upcoming`
+          : `${API_BASE_URL}/events`;
           
         const response = await fetch(endpoint);
         if (response.ok) {

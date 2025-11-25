@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/utils/apiConfig";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch("https://fluffy-train-xqwq79vrw7x29qpx-8080.app.github.dev/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export default function RegisterPage() {
       console.log(data);
       if (data.success) {
         toast.success("Registration successful!");
-        login(data.data.token, data.data);
+        login(data.data.accessToken, data.data);
         router.push('/');
       } else {
         // Display the specific error message from the backend (e.g., weak password, existing email)
@@ -66,6 +67,7 @@ export default function RegisterPage() {
       }
     } catch (err) {
       toast.error("An error occurred. Please try again later.");
+      console.error("Registration error:", err);
     } finally {
       setLoading(false);
     }
